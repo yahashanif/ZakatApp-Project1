@@ -25,3 +25,4 @@ part 'zakat_investasi_page.dart';
 part 'zakat_rikaz_page.dart';
 part 'ilmu_zakat_page.dart';
 part 'dalil_page.dart';
+part 'penerimaZakat_page.dart';

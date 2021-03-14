@@ -183,54 +183,60 @@ class _HomePageState extends State<HomePage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: "BC9E6C".toColor()),
-                    borderRadius: BorderRadius.circular(8)),
-                height: 100,
-                width: 100,
-                child: ListView(
-                  children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                        margin: EdgeInsets.only(top: 5),
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage("assets/ic_penerima.png"))),
+              GestureDetector(
+                onTap: () {
+                  Get.to(PenerimaZakat());
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: "BC9E6C".toColor()),
+                      borderRadius: BorderRadius.circular(8)),
+                  height: 100,
+                  width: 100,
+                  child: ListView(
+                    children: [
+                      Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          margin: EdgeInsets.only(top: 5),
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage("assets/ic_penerima.png"))),
+                        ),
                       ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 5, right: 5),
-                      child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: FutureBuilder<String>(
-                              // get the languageCode, saved in the preferences
-                              future: SharedPreferencesHelper.getLanguageCode(),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<String> snapshot) {
-                                if (snapshot.hasData) {
-                                  if (snapshot.data == "Indonesia") {
-                                    return Text(id_PenerimaZakat,
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.poppins(
-                                            color: Colors.black,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600));
-                                  } else {
-                                    return Text(eg_PenerimaZakat,
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.poppins(
-                                            color: Colors.black,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w600));
+                      Container(
+                        padding: EdgeInsets.only(left: 5, right: 5),
+                        child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: FutureBuilder<String>(
+                                // get the languageCode, saved in the preferences
+                                future:
+                                    SharedPreferencesHelper.getLanguageCode(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<String> snapshot) {
+                                  if (snapshot.hasData) {
+                                    if (snapshot.data == "Indonesia") {
+                                      return Text(id_PenerimaZakat,
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.black,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600));
+                                    } else {
+                                      return Text(eg_PenerimaZakat,
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.black,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600));
+                                    }
                                   }
-                                }
-                              })),
-                    ),
-                  ],
+                                })),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Container(
