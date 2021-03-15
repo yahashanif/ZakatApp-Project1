@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zakat/shared/shared.dart';
 import 'package:zakat/ui/widgets/widgets.dart';
@@ -26,3 +28,5 @@ part 'zakat_rikaz_page.dart';
 part 'ilmu_zakat_page.dart';
 part 'dalil_page.dart';
 part 'penerimaZakat_page.dart';
+part 'setting_page_awal.dart';
+part 'splash_page.dart';

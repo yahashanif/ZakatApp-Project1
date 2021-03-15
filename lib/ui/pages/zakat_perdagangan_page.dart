@@ -8,9 +8,19 @@ class ZakatPerdaganganPage extends StatefulWidget {
 class _ZakatPerdaganganPageState extends State<ZakatPerdaganganPage> {
   String tgl = "-- : -- : ----";
   String bahasa;
+  int syarat = 0;
+  String bayarzakat;
+  String total;
+  TextEditingController perdaganganController = TextEditingController();
   getlanguage() async {
     bahasa = await SharedPreferencesHelper.getLanguageCode();
     return bahasa;
+  }
+
+  getemas() async {
+    syarat = await SharedPreferencesHelper.getEmasPrice();
+    syarat = syarat * 85;
+    return syarat;
   }
 
   @override
@@ -19,6 +29,7 @@ class _ZakatPerdaganganPageState extends State<ZakatPerdaganganPage> {
 
     super.initState();
     getlanguage();
+    getemas();
   }
 
   @override
@@ -139,6 +150,7 @@ class _ZakatPerdaganganPageState extends State<ZakatPerdaganganPage> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.black)),
                         child: TextField(
+                          controller: perdaganganController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                               border: InputBorder.none,
@@ -151,7 +163,42 @@ class _ZakatPerdaganganPageState extends State<ZakatPerdaganganPage> {
                       Container(
                           margin: EdgeInsets.fromLTRB(5, 36, 5, 0),
                           child: RaisedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (int.parse(perdaganganController.text) >=
+                                  syarat.toInt()) {
+                                total = NumberFormat.currency(
+                                        locale: 'id-ID',
+                                        symbol: 'IDR ',
+                                        decimalDigits: 0)
+                                    .format(
+                                        int.parse(perdaganganController.text) *
+                                            0.025);
+                                print(perdaganganController.text);
+                                saveData("Zakat Perdagangan", "Trade Zakat",
+                                    tgl, total.toString());
+                                Get.offAll(MainPage(
+                                  initialPage: 1,
+                                ));
+                              } else {
+                                Get.snackbar("", "",
+                                    backgroundColor: "D9435E".toColor(),
+                                    icon: Icon(
+                                      Icons.info_outline,
+                                      color: Colors.white,
+                                    ),
+                                    titleText: Text(
+                                      "Gagal",
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    messageText: Text(
+                                      "Syarat Tabungan Belum Mencukupi Nisab",
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white),
+                                    ));
+                              }
+                            },
                             elevation: 0,
                             color: "BC9E6C".toColor(),
                             shape: RoundedRectangleBorder(
