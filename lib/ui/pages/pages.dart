@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -30,3 +32,4 @@ part 'dalil_page.dart';
 part 'penerimaZakat_page.dart';
 part 'setting_page_awal.dart';
 part 'splash_page.dart';
+part 'about_app_page.dart';

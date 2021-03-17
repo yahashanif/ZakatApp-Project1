@@ -133,6 +133,12 @@ class _SettingAwalState extends State<SettingAwal> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: TextField(
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            // Fit the validating format.
+                            //fazer o formater para dinheiro
+                            CurrencyInputFormatter()
+                          ],
                           controller: emasController,
                           decoration: InputDecoration(
                               border: InputBorder.none,
@@ -158,6 +164,12 @@ class _SettingAwalState extends State<SettingAwal> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: TextField(
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            // Fit the validating format.
+                            //fazer o formater para dinheiro
+                            CurrencyInputFormatter()
+                          ],
                           controller: perakController,
                           decoration: InputDecoration(
                               border: InputBorder.none,
@@ -174,6 +186,17 @@ class _SettingAwalState extends State<SettingAwal> {
                         onTap: () async {
                           emas = emasController.text.toInt();
                           perak = perakController.text.toInt();
+                          if (emasController.text.length == 0) {
+                            emas = saveemas;
+                          } else {
+                            emas = int.parse(replaceuang(emasController.text));
+                          }
+                          if (perakController.text.length == 0) {
+                            perak = saveperak;
+                          } else {
+                            perak =
+                                int.parse(replaceuang(perakController.text));
+                          }
 
                           await SharedPreferencesHelper.setLanguageCode(
                               selectedLanguage.name);

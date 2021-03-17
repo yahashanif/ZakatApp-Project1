@@ -8,10 +8,13 @@ class ZakatRikazPage extends StatefulWidget {
 class _ZakatRikazPageState extends State<ZakatRikazPage> {
   String tgl = "-- : -- : ----";
   String bahasa;
+  String bayarzakat;
   getlanguage() async {
     bahasa = await SharedPreferencesHelper.getLanguageCode();
     return bahasa;
   }
+
+  TextEditingController rikazController = TextEditingController();
 
   @override
   void initState() {
@@ -23,6 +26,7 @@ class _ZakatRikazPageState extends State<ZakatRikazPage> {
 
   @override
   Widget build(BuildContext context) {
+    tgl = convertDateTimeDisplay(DateTime.now().toString());
     return Scaffold(
       body: Stack(
         children: [
@@ -112,6 +116,13 @@ class _ZakatRikazPageState extends State<ZakatRikazPage> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.black)),
                         child: TextField(
+                          controller: rikazController,
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            // Fit the validating format.
+                            //fazer o formater para dinheiro
+                            CurrencyInputFormatter()
+                          ],
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                               border: InputBorder.none,
@@ -124,7 +135,46 @@ class _ZakatRikazPageState extends State<ZakatRikazPage> {
                       Container(
                           margin: EdgeInsets.fromLTRB(5, 36, 5, 0),
                           child: RaisedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (rikazController.text != "") {
+                                int t = int.parse(
+                                    replaceuang(rikazController.text));
+                                bayarzakat = "" +
+                                    NumberFormat.currency(
+                                            locale: 'id-ID',
+                                            symbol: 'Rp. ',
+                                            decimalDigits: 0)
+                                        .format(t * 0.2);
+                                print(bayarzakat);
+                                saveData("Zakat Rikaz", "Zakat Rikaz", tgl,
+                                    bayarzakat);
+                                Get.offAll(MainPage(
+                                  initialPage: 1,
+                                ));
+                              } else {
+                                Get.snackbar("", "",
+                                    backgroundColor: "D9435E".toColor(),
+                                    icon: Icon(
+                                      Icons.info_outline,
+                                      color: Colors.white,
+                                    ),
+                                    titleText: Text(
+                                      (snapshot.data == "Indonesia")
+                                          ? "Gagal"
+                                          : "Failed",
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    messageText: Text(
+                                      (snapshot.data == "Indonesia")
+                                          ? "Field Tidak Boleh Kosong"
+                                          : "Fields Cannot Be Empty",
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white),
+                                    ));
+                              }
+                            },
                             elevation: 0,
                             color: "BC9E6C".toColor(),
                             shape: RoundedRectangleBorder(
@@ -132,7 +182,7 @@ class _ZakatRikazPageState extends State<ZakatRikazPage> {
                             child: Text(
                               (snapshot.data == "Indonesia")
                                   ? "Hitung"
-                                  : "Count",
+                                  : "Calculate",
                               style: GoogleFonts.poppins(color: Colors.white),
                             ),
                           ))

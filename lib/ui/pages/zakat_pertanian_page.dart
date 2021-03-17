@@ -8,21 +8,34 @@ class ZakatPertanianPage extends StatefulWidget {
 class _ZakatPertanianPageState extends State<ZakatPertanianPage> {
   String tgl = "-- : -- : ----";
   String bahasa;
+  double zakatbayar;
   getlanguage() async {
     bahasa = await SharedPreferencesHelper.getLanguageCode();
     return bahasa;
   }
+
+  TextEditingController taniController = TextEditingController();
+
+  int pertaniangroup;
 
   @override
   void initState() {
     // TODO: implement initState
 
     super.initState();
+    pertaniangroup = 0;
     getlanguage();
+  }
+
+  setTaniRadio(int value) {
+    setState(() {
+      pertaniangroup = value;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    tgl = convertDateTimeDisplay(DateTime.now().toString());
     return Scaffold(
       body: Stack(
         children: [
@@ -100,8 +113,8 @@ class _ZakatPertanianPageState extends State<ZakatPertanianPage> {
                         margin: EdgeInsets.only(left: 75, top: 6),
                         child: Text(
                             (snapshot.data == "Indonesia")
-                                ? "2. Mencapai 653 Kg Gabah Atau 520 Kg Makanan Pokok "
-                                : "2. Reaches 653 Kg of Grain or 520 Kg of Staple Food ",
+                                ? "2. Mencapai 653 Kg Beras Atau Makanan Pokok "
+                                : "2. Reaches 653 Kg of Rice Or Staple Food ",
                             style: GoogleFonts.poppins(
                                 color: "8D92A3".toColor(),
                                 fontWeight: FontWeight.w300)),
@@ -127,6 +140,7 @@ class _ZakatPertanianPageState extends State<ZakatPertanianPage> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.black)),
                         child: TextField(
+                          controller: taniController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                               border: InputBorder.none,
@@ -147,9 +161,12 @@ class _ZakatPertanianPageState extends State<ZakatPertanianPage> {
                                 children: <Widget>[
                                   Radio(
                                       value: 1,
-                                      groupValue: null,
+                                      groupValue: pertaniangroup,
                                       activeColor: "BC9E6C".toColor(),
-                                      onChanged: null),
+                                      onChanged: (val) {
+                                        setTaniRadio(val);
+                                        setState(() {});
+                                      }),
                                   Column(
                                     children: [
                                       Container(
@@ -174,8 +191,13 @@ class _ZakatPertanianPageState extends State<ZakatPertanianPage> {
                                 children: <Widget>[
                                   Radio(
                                       value: 2,
-                                      groupValue: null,
-                                      onChanged: null),
+                                      groupValue: pertaniangroup,
+                                      activeColor: "BC9E6C".toColor(),
+                                      onChanged: (val) {
+                                        setTaniRadio(val);
+                                        setState(() {});
+                                        print(val);
+                                      }),
                                   Text(
                                       (snapshot.data == "Indonesia")
                                           ? "Dialiri dengan cara disiram(menggunakan alat)"
@@ -193,7 +215,72 @@ class _ZakatPertanianPageState extends State<ZakatPertanianPage> {
                       Container(
                           margin: EdgeInsets.fromLTRB(5, 36, 5, 0),
                           child: RaisedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (taniController.text != "" &&
+                                  pertaniangroup != 0) {
+                                if ((taniController.text).toInt() >= 653) {
+                                  if (pertaniangroup == 1) {
+                                    zakatbayar =
+                                        (taniController.text).toInt() * 0.1;
+                                  } else {
+                                    zakatbayar =
+                                        (taniController.text).toInt() * 0.05;
+                                  }
+                                  saveData(
+                                      "Zakat Pertanian",
+                                      "Agriculture Zakat",
+                                      tgl,
+                                      "" + zakatbayar.toString() + " Kg");
+                                  Get.offAll(MainPage(
+                                    initialPage: 1,
+                                  ));
+                                } else {
+                                  Get.snackbar("", "",
+                                      backgroundColor: "D9435E".toColor(),
+                                      icon: Icon(
+                                        Icons.info_outline,
+                                        color: Colors.white,
+                                      ),
+                                      titleText: Text(
+                                        (snapshot.data == "Indonesia")
+                                            ? "Gagal"
+                                            : "Failed",
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      messageText: Text(
+                                        (snapshot.data == "Indonesia")
+                                            ? "Syarat Pertanian Belum Mencukupi Nisab"
+                                            : "Agricultural Requirements Are Not Sufficient for Nisab",
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white),
+                                      ));
+                                }
+                              } else {
+                                Get.snackbar("", "",
+                                    backgroundColor: "D9435E".toColor(),
+                                    icon: Icon(
+                                      Icons.info_outline,
+                                      color: Colors.white,
+                                    ),
+                                    titleText: Text(
+                                      (snapshot.data == "Indonesia")
+                                          ? "Gagal"
+                                          : "Failed",
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    messageText: Text(
+                                      (snapshot.data == "Indonesia")
+                                          ? "Field Tidak Boleh Kosong"
+                                          : "Fields Cannot Be Empty",
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white),
+                                    ));
+                              }
+                            },
                             elevation: 0,
                             color: "BC9E6C".toColor(),
                             shape: RoundedRectangleBorder(
@@ -201,7 +288,7 @@ class _ZakatPertanianPageState extends State<ZakatPertanianPage> {
                             child: Text(
                               (snapshot.data == "Indonesia")
                                   ? "Hitung"
-                                  : "Count",
+                                  : "Calculate",
                               style: GoogleFonts.poppins(color: Colors.white),
                             ),
                           ))

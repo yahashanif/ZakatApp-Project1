@@ -149,8 +149,14 @@ class _ZakatPerdaganganPageState extends State<ZakatPerdaganganPage> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.black)),
-                        child: TextField(
+                        child: TextFormField(
                           controller: perdaganganController,
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            // Fit the validating format.
+                            //fazer o formater para dinheiro
+                            CurrencyInputFormatter()
+                          ],
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                               border: InputBorder.none,
@@ -164,21 +170,44 @@ class _ZakatPerdaganganPageState extends State<ZakatPerdaganganPage> {
                           margin: EdgeInsets.fromLTRB(5, 36, 5, 0),
                           child: RaisedButton(
                             onPressed: () {
-                              if (int.parse(perdaganganController.text) >=
-                                  syarat.toInt()) {
-                                total = NumberFormat.currency(
-                                        locale: 'id-ID',
-                                        symbol: 'IDR ',
-                                        decimalDigits: 0)
-                                    .format(
-                                        int.parse(perdaganganController.text) *
-                                            0.025);
-                                print(perdaganganController.text);
-                                saveData("Zakat Perdagangan", "Trade Zakat",
-                                    tgl, total.toString());
-                                Get.offAll(MainPage(
-                                  initialPage: 1,
-                                ));
+                              if (perdaganganController.text != "") {
+                                int t = int.parse(
+                                    replaceuang(perdaganganController.text));
+                                if (t >= syarat.toInt()) {
+                                  total = NumberFormat.currency(
+                                          locale: 'id-ID',
+                                          symbol: 'Rp. ',
+                                          decimalDigits: 0)
+                                      .format(t * 0.025);
+                                  print(perdaganganController.text);
+                                  saveData("Zakat Perdagangan", "Trade Zakat",
+                                      tgl, total.toString());
+                                  Get.offAll(MainPage(
+                                    initialPage: 1,
+                                  ));
+                                } else {
+                                  Get.snackbar("", "",
+                                      backgroundColor: "D9435E".toColor(),
+                                      icon: Icon(
+                                        Icons.info_outline,
+                                        color: Colors.white,
+                                      ),
+                                      titleText: Text(
+                                        (snapshot.data == "Indonesia")
+                                            ? "Gagal"
+                                            : "Failed",
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      messageText: Text(
+                                        (snapshot.data == "Indonesia")
+                                            ? "Syarat Perdagangan Belum Mencukupi Nisab"
+                                            : "Terms of Trade Not Enough Nisab",
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white),
+                                      ));
+                                }
                               } else {
                                 Get.snackbar("", "",
                                     backgroundColor: "D9435E".toColor(),
@@ -187,13 +216,17 @@ class _ZakatPerdaganganPageState extends State<ZakatPerdaganganPage> {
                                       color: Colors.white,
                                     ),
                                     titleText: Text(
-                                      "Gagal",
+                                      (snapshot.data == "Indonesia")
+                                          ? "Gagal"
+                                          : "Failed",
                                       style: GoogleFonts.poppins(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600),
                                     ),
                                     messageText: Text(
-                                      "Syarat Tabungan Belum Mencukupi Nisab",
+                                      (snapshot.data == "Indonesia")
+                                          ? "Field Tidak Boleh Kosong"
+                                          : "Fields Cannot Be Empty",
                                       style: GoogleFonts.poppins(
                                           color: Colors.white),
                                     ));
@@ -206,7 +239,7 @@ class _ZakatPerdaganganPageState extends State<ZakatPerdaganganPage> {
                             child: Text(
                               (snapshot.data == "Indonesia")
                                   ? "Hitung"
-                                  : "Count",
+                                  : "Calculate",
                               style: GoogleFonts.poppins(color: Colors.white),
                             ),
                           ))

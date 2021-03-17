@@ -133,33 +133,24 @@ class _ZakatListState extends State<ZakatList> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           (widget.zakatdata[i].status == "no")
-                              ? Row(
-                                  children: [
-                                    Container(
-                                      child: FutureBuilder<String>(
-                                          // get the languageCode, saved in the preferences
-                                          future: SharedPreferencesHelper
-                                              .getLanguageCode(),
-                                          // ignore: missing_return
-                                          builder: (BuildContext context,
-                                              AsyncSnapshot<String> snapshot) {
-                                            if (snapshot.hasData) {
-                                              if (snapshot.data ==
-                                                  "Indonesia") {
-                                                return Text(
-                                                  "Menunggu",
-                                                );
-                                              } else {
-                                                return Text("Waiting");
-                                              }
-                                            }
-                                          }),
-                                    ),
-                                    SpinKitFadingCircle(
-                                      size: 30,
-                                      color: "BC9E6C".toColor(),
-                                    )
-                                  ],
+                              ? Container(
+                                  child: FutureBuilder<String>(
+                                      // get the languageCode, saved in the preferences
+                                      future: SharedPreferencesHelper
+                                          .getLanguageCode(),
+                                      // ignore: missing_return
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<String> snapshot) {
+                                        if (snapshot.hasData) {
+                                          if (snapshot.data == "Indonesia") {
+                                            return Text(
+                                              "Menunggu",
+                                            );
+                                          } else {
+                                            return Text("Waiting");
+                                          }
+                                        }
+                                      }),
                                 )
                               : SizedBox(),
                           (widget.zakatdata[i].status == "no")

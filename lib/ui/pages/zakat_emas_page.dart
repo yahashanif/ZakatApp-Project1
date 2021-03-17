@@ -235,22 +235,46 @@ class _ZakatEmasPageState extends State<ZakatEmasPage> {
                           AsyncSnapshot<String> snapshot) {
                         return RaisedButton(
                             onPressed: () {
-                              if (int.parse(emascontroller.text) >= 85) {
-                                gram = int.parse(emascontroller.text) * 0.025;
-                                var kk = gram * syarat;
-                                total = "" +
-                                    gram.toString() +
-                                    " gram / " +
-                                    NumberFormat.currency(
-                                            locale: 'id-ID',
-                                            symbol: 'IDR ',
-                                            decimalDigits: 0)
-                                        .format(kk);
-                                saveData(
-                                    "Zakat Emas", "Zakat Gold", tgl, total);
-                                Get.offAll(MainPage(
-                                  initialPage: 1,
-                                ));
+                              if (emascontroller.text != "") {
+                                if (int.parse(emascontroller.text) >= 85) {
+                                  gram = int.parse(emascontroller.text) * 0.025;
+                                  var kk = gram * syarat;
+                                  total = "" +
+                                      gram.toString() +
+                                      " gram / " +
+                                      NumberFormat.currency(
+                                              locale: 'id-ID',
+                                              symbol: 'Rp. ',
+                                              decimalDigits: 0)
+                                          .format(kk);
+                                  saveData(
+                                      "Zakat Emas", "Zakat Gold", tgl, total);
+                                  Get.offAll(MainPage(
+                                    initialPage: 1,
+                                  ));
+                                } else {
+                                  Get.snackbar("", "",
+                                      backgroundColor: "D9435E".toColor(),
+                                      icon: Icon(
+                                        Icons.info_outline,
+                                        color: Colors.white,
+                                      ),
+                                      titleText: Text(
+                                        (snapshot.data == "Indonesia")
+                                            ? "Gagal"
+                                            : "Failed",
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      messageText: Text(
+                                        (snapshot.data == "Indonesia")
+                                            ? "Syarat Emas Belum Mencukupi Nisab"
+                                            : "Gold Requirements Not Enough Nisab",
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white),
+                                      ));
+                                }
                               } else {
                                 Get.snackbar("", "",
                                     backgroundColor: "D9435E".toColor(),
@@ -268,8 +292,8 @@ class _ZakatEmasPageState extends State<ZakatEmasPage> {
                                     ),
                                     messageText: Text(
                                       (snapshot.data == "Indonesia")
-                                          ? "Syarat Emas Belum Mencukupi Nisab"
-                                          : "Gold Requirements Not Enough Nisab",
+                                          ? "Field Tidak Boleh Kosong"
+                                          : "Fields Cannot Be Empty",
                                       style: GoogleFonts.poppins(
                                           color: Colors.white),
                                     ));
@@ -280,7 +304,9 @@ class _ZakatEmasPageState extends State<ZakatEmasPage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8)),
                             child: Text(
-                              "Hitung",
+                              (snapshot.data == "Indonesia")
+                                  ? "Hitung"
+                                  : "Calculate",
                               style: GoogleFonts.poppins()
                                   .copyWith(color: Colors.white),
                             ));

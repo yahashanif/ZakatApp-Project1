@@ -9,6 +9,7 @@ class _SettinganPageState extends State<SettinganPage> {
   int emas;
   int saveemas;
   int saveperak;
+  String savebahasa;
   String ems;
   int perak;
   TextEditingController emasController = TextEditingController();
@@ -102,6 +103,7 @@ class _SettinganPageState extends State<SettinganPage> {
                               builder: (BuildContext context,
                                   AsyncSnapshot<String> snapshot) {
                                 if (snapshot.hasData) {
+                                  savebahasa = snapshot.data;
                                   if (snapshot.data == "Indonesia") {
                                     return Align(
                                       alignment: Alignment.centerLeft,
@@ -165,6 +167,7 @@ class _SettinganPageState extends State<SettinganPage> {
                                 AsyncSnapshot<String> snapshot) {
                               if (snapshot.hasData) {
                                 if (snapshot.data == "Indonesia") {
+                                  savebahasa = snapshot.data;
                                   return Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
@@ -172,6 +175,8 @@ class _SettinganPageState extends State<SettinganPage> {
                                     ),
                                   );
                                 } else {
+                                  savebahasa = snapshot.data;
+
                                   return Text(
                                     "English",
                                   );
@@ -182,6 +187,7 @@ class _SettinganPageState extends State<SettinganPage> {
                         value: selectedLanguage,
                         onChanged: (item) {
                           selectedLanguage = item;
+                          bahasa = selectedLanguage.name;
                           print(selectedLanguage.name);
                           setState(() {});
                         }),
@@ -231,6 +237,12 @@ class _SettinganPageState extends State<SettinganPage> {
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) {
                             return TextField(
+                              inputFormatters: [
+                                WhitelistingTextInputFormatter.digitsOnly,
+                                // Fit the validating format.
+                                //fazer o formater para dinheiro
+                                CurrencyInputFormatter()
+                              ],
                               decoration: InputDecoration(
                                   border: InputBorder.none,
                                   hintStyle: GoogleFonts.poppins(
@@ -242,6 +254,12 @@ class _SettinganPageState extends State<SettinganPage> {
                           } else {
                             saveemas = snapshot.data.getInt("emas");
                             return TextField(
+                              inputFormatters: [
+                                WhitelistingTextInputFormatter.digitsOnly,
+                                // Fit the validating format.
+                                //fazer o formater para dinheiro
+                                CurrencyInputFormatter()
+                              ],
                               decoration: InputDecoration(
                                   border: InputBorder.none,
                                   hintStyle: GoogleFonts.poppins(
@@ -249,7 +267,7 @@ class _SettinganPageState extends State<SettinganPage> {
                                       fontWeight: FontWeight.w300),
                                   hintText: NumberFormat.currency(
                                           locale: 'id-ID',
-                                          symbol: 'IDR ',
+                                          symbol: 'Rp. ',
                                           decimalDigits: 0)
                                       .format(snapshot.data.getInt("emas"))),
                               controller: emasController,
@@ -279,6 +297,12 @@ class _SettinganPageState extends State<SettinganPage> {
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) {
                             return TextField(
+                              inputFormatters: [
+                                WhitelistingTextInputFormatter.digitsOnly,
+                                // Fit the validating format.
+                                //fazer o formater para dinheiro
+                                CurrencyInputFormatter()
+                              ],
                               decoration: InputDecoration(
                                   border: InputBorder.none,
                                   hintStyle: GoogleFonts.poppins(
@@ -290,6 +314,12 @@ class _SettinganPageState extends State<SettinganPage> {
                           } else {
                             saveperak = snapshot.data.getInt("perak");
                             return TextField(
+                              inputFormatters: [
+                                WhitelistingTextInputFormatter.digitsOnly,
+                                // Fit the validating format.
+                                //fazer o formater para dinheiro
+                                CurrencyInputFormatter()
+                              ],
                               decoration: InputDecoration(
                                   border: InputBorder.none,
                                   hintStyle: GoogleFonts.poppins(
@@ -297,7 +327,7 @@ class _SettinganPageState extends State<SettinganPage> {
                                       fontWeight: FontWeight.w300),
                                   hintText: NumberFormat.currency(
                                           locale: 'id-ID',
-                                          symbol: 'IDR ',
+                                          symbol: 'Rp. ',
                                           decimalDigits: 0)
                                       .format(snapshot.data.getInt("perak"))),
                               controller: perakController,
@@ -317,16 +347,27 @@ class _SettinganPageState extends State<SettinganPage> {
                             // } else {
                             //   selectedLanguage = Language(selectedLanguage.name);
                             // }
-                            emas = emasController.text.toInt();
-                            perak = perakController.text.toInt();
+
                             if (emasController.text.length == 0) {
                               emas = saveemas;
+                            } else {
+                              emas =
+                                  int.parse(replaceuang(emasController.text));
                             }
                             if (perakController.text.length == 0) {
                               perak = saveperak;
+                            } else {
+                              perak =
+                                  int.parse(replaceuang(perakController.text));
                             }
+                            // if (selectedLanguage.name != "") {
+                            //   bahasa = selectedLanguage.name;
+                            // } else {
+                            //   bahasa = savebahasa;
+                            // }
+
                             await SharedPreferencesHelper.setLanguageCode(
-                                selectedLanguage.name);
+                                bahasa);
                             await SharedPreferencesHelper.setEmasPrice(emas);
                             await SharedPreferencesHelper.setPerakPrice(perak);
                             Get.offAll(MainPage());
@@ -350,6 +391,6 @@ class _SettinganPageState extends State<SettinganPage> {
 }
 
 class Language {
-  String name;
+  String name = "";
   Language(this.name);
 }

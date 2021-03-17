@@ -8,21 +8,42 @@ class ZakatInvestasiPage extends StatefulWidget {
 class _ZakatInvestasiPageState extends State<ZakatInvestasiPage> {
   String tgl = "-- : -- : ----";
   String bahasa;
+  int syarat = 0;
+  String bayarzakat;
   getlanguage() async {
     bahasa = await SharedPreferencesHelper.getLanguageCode();
     return bahasa;
   }
+
+  getemas() async {
+    syarat = await SharedPreferencesHelper.getEmasPrice();
+    syarat = syarat * 85;
+    return syarat;
+  }
+
+  TextEditingController investasiController = TextEditingController();
+
+  int penghasilanGroup;
 
   @override
   void initState() {
     // TODO: implement initState
 
     super.initState();
+    penghasilanGroup = 0;
     getlanguage();
+    getemas();
+  }
+
+  sethasilRadio(int value) {
+    setState(() {
+      penghasilanGroup = value;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    tgl = convertDateTimeDisplay(DateTime.now().toString());
     return Scaffold(
       body: Stack(
         children: [
@@ -137,6 +158,13 @@ class _ZakatInvestasiPageState extends State<ZakatInvestasiPage> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.black)),
                         child: TextField(
+                          controller: investasiController,
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            // Fit the validating format.
+                            //fazer o formater para dinheiro
+                            CurrencyInputFormatter()
+                          ],
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                               border: InputBorder.none,
@@ -157,9 +185,12 @@ class _ZakatInvestasiPageState extends State<ZakatInvestasiPage> {
                                 children: <Widget>[
                                   Radio(
                                       value: 1,
-                                      groupValue: null,
+                                      groupValue: penghasilanGroup,
                                       activeColor: "BC9E6C".toColor(),
-                                      onChanged: null),
+                                      onChanged: (val) {
+                                        sethasilRadio(val);
+                                        setState(() {});
+                                      }),
                                   Text(
                                     (snapshot.data == "Indonesia")
                                         ? "Penghasilan bersih"
@@ -177,8 +208,12 @@ class _ZakatInvestasiPageState extends State<ZakatInvestasiPage> {
                                 children: <Widget>[
                                   Radio(
                                       value: 2,
-                                      groupValue: null,
-                                      onChanged: null),
+                                      groupValue: penghasilanGroup,
+                                      activeColor: "BC9E6C".toColor(),
+                                      onChanged: (val) {
+                                        sethasilRadio(val);
+                                        setState(() {});
+                                      }),
                                   Text(
                                       (snapshot.data == "Indonesia")
                                           ? "Penghasilan kotor"
@@ -196,7 +231,79 @@ class _ZakatInvestasiPageState extends State<ZakatInvestasiPage> {
                       Container(
                           margin: EdgeInsets.fromLTRB(5, 36, 5, 0),
                           child: RaisedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (investasiController != "" &&
+                                  penghasilanGroup != 0) {
+                                int t = int.parse(
+                                    replaceuang(investasiController.text));
+                                if (t >= syarat) {
+                                  if (penghasilanGroup == 1) {
+                                    bayarzakat = "" +
+                                        NumberFormat.currency(
+                                                locale: 'id-ID',
+                                                symbol: 'Rp. ',
+                                                decimalDigits: 0)
+                                            .format(t * 0.1);
+                                  } else {
+                                    bayarzakat = "" +
+                                        NumberFormat.currency(
+                                                locale: 'id-ID',
+                                                symbol: 'Rp. ',
+                                                decimalDigits: 0)
+                                            .format(t * 0.05);
+                                  }
+                                  saveData("Zakat Investasi",
+                                      "investation Zakat", tgl, bayarzakat);
+                                  Get.offAll(MainPage(
+                                    initialPage: 1,
+                                  ));
+                                } else {
+                                  Get.snackbar("", "",
+                                      backgroundColor: "D9435E".toColor(),
+                                      icon: Icon(
+                                        Icons.info_outline,
+                                        color: Colors.white,
+                                      ),
+                                      titleText: Text(
+                                        (snapshot.data == "Indonesia")
+                                            ? "Gagal"
+                                            : "Failed",
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      messageText: Text(
+                                        (snapshot.data == "Indonesia")
+                                            ? "Syarat Investasi Belum Mencukupi Nisab"
+                                            : "Investment Requirements Are Not Enough Nisab",
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white),
+                                      ));
+                                }
+                              } else {
+                                Get.snackbar("", "",
+                                    backgroundColor: "D9435E".toColor(),
+                                    icon: Icon(
+                                      Icons.info_outline,
+                                      color: Colors.white,
+                                    ),
+                                    titleText: Text(
+                                      (snapshot.data == "Indonesia")
+                                          ? "Gagal"
+                                          : "Failed",
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    messageText: Text(
+                                      (snapshot.data == "Indonesia")
+                                          ? "Field Tidak Boleh Kosong"
+                                          : "Fields Cannot Be Empty",
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white),
+                                    ));
+                              }
+                            },
                             elevation: 0,
                             color: "BC9E6C".toColor(),
                             shape: RoundedRectangleBorder(
@@ -204,7 +311,7 @@ class _ZakatInvestasiPageState extends State<ZakatInvestasiPage> {
                             child: Text(
                               (snapshot.data == "Indonesia")
                                   ? "Hitung"
-                                  : "Count",
+                                  : "Calculate",
                               style: GoogleFonts.poppins(color: Colors.white),
                             ),
                           ))

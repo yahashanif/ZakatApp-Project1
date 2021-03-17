@@ -239,52 +239,58 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: "BC9E6C".toColor()),
-                    borderRadius: BorderRadius.circular(8)),
-                height: 100,
-                width: 100,
-                child: ListView(
-                  children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                        margin: EdgeInsets.only(top: 10),
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage("assets/ic_about.png"))),
+              GestureDetector(
+                onTap: () {
+                  Get.to(AboutPage());
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: "BC9E6C".toColor()),
+                      borderRadius: BorderRadius.circular(8)),
+                  height: 100,
+                  width: 100,
+                  child: ListView(
+                    children: [
+                      Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          margin: EdgeInsets.only(top: 10),
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage("assets/ic_about.png"))),
+                        ),
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 5, bottom: 5),
-                      child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: FutureBuilder<String>(
-                              // get the languageCode, saved in the preferences
-                              future: SharedPreferencesHelper.getLanguageCode(),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<String> snapshot) {
-                                if (snapshot.hasData) {
-                                  if (snapshot.data == "Indonesia") {
-                                    return Text(id_Tentang,
-                                        style: GoogleFonts.poppins(
-                                            color: Colors.black,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600));
-                                  } else {
-                                    return Text(eg_Tentang,
-                                        style: GoogleFonts.poppins(
-                                            color: Colors.black,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w600));
+                      Container(
+                        margin: EdgeInsets.only(top: 5, bottom: 5),
+                        child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: FutureBuilder<String>(
+                                // get the languageCode, saved in the preferences
+                                future:
+                                    SharedPreferencesHelper.getLanguageCode(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<String> snapshot) {
+                                  if (snapshot.hasData) {
+                                    if (snapshot.data == "Indonesia") {
+                                      return Text(id_Tentang,
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.black,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600));
+                                    } else {
+                                      return Text(eg_Tentang,
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.black,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600));
+                                    }
                                   }
-                                }
-                              })),
-                    ),
-                  ],
+                                })),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               GestureDetector(

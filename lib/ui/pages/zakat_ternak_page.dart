@@ -10,8 +10,11 @@ class _ZakatTernakPageState extends State<ZakatTernakPage> {
   int ternakgroup;
   String nisab;
   String bahasa;
+  String bayarzakat;
   int syarat;
+  int total = 0;
   String tipe;
+  TextEditingController ternakController = TextEditingController();
   getlanguage() async {
     bahasa = await SharedPreferencesHelper.getLanguageCode();
     return bahasa;
@@ -34,6 +37,7 @@ class _ZakatTernakPageState extends State<ZakatTernakPage> {
 
   @override
   Widget build(BuildContext context) {
+    tgl = convertDateTimeDisplay(DateTime.now().toString());
     return Scaffold(
       body: Stack(
         children: [
@@ -260,6 +264,7 @@ class _ZakatTernakPageState extends State<ZakatTernakPage> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.black)),
                         child: TextField(
+                          controller: ternakController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                               border: InputBorder.none,
@@ -272,7 +277,259 @@ class _ZakatTernakPageState extends State<ZakatTernakPage> {
                       Container(
                           margin: EdgeInsets.fromLTRB(5, 36, 5, 0),
                           child: RaisedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (ternakController.text != "" &&
+                                  ternakgroup != 0) {
+                                total = int.parse(ternakController.text);
+
+                                if (ternakgroup == 1) {
+                                  if (int.parse(ternakController.text) >= 30) {
+                                    print(total);
+                                    print(total % 30);
+                                    print(total % 40);
+
+                                    if (total % 40 == 0) {
+                                      print((total / 40).floor());
+                                      bayarzakat = "" +
+                                          (total / 40).floor().toString() +
+                                          " Sapi/Kerbau berumur 2 tahun";
+                                      print(bayarzakat);
+                                    } else if (total % 30 == 0) {
+                                      print((total / 30).floor());
+                                      bayarzakat = "" +
+                                          (total / 30).floor().toString() +
+                                          " Sapi/Kerbau berumur 1 tahun";
+                                      print(bayarzakat);
+                                    } else if (total % 40 < 40) {
+                                      print(total % 40);
+                                      print((total / 40).floor());
+                                      bayarzakat = "" +
+                                          (total / 40).floor().toString() +
+                                          " Sapi/Kerbau berumur 2 tahun";
+                                      print(bayarzakat);
+                                    } else if (total % 30 < 30) {
+                                      print(total % 30);
+                                      print((total / 30).floor());
+                                      bayarzakat = "" +
+                                          (total / 30).floor().toString() +
+                                          " Sapi/Kerbau berumur 1 tahun";
+                                      print(bayarzakat);
+                                    }
+                                    saveData(
+                                        "Zakat Ternak Sapi/Kerbau",
+                                        "Zakat on cattle / buffalo",
+                                        tgl,
+                                        bayarzakat);
+                                    Get.offAll(MainPage(
+                                      initialPage: 1,
+                                    ));
+                                  } else {
+                                    Get.snackbar("", "",
+                                        backgroundColor: "D9435E".toColor(),
+                                        icon: Icon(
+                                          Icons.info_outline,
+                                          color: Colors.white,
+                                        ),
+                                        titleText: Text(
+                                          (snapshot.data == "Indonesia")
+                                              ? "Gagal"
+                                              : "Failed",
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        messageText: Text(
+                                          (snapshot.data == "Indonesia")
+                                              ? "Syarat Ternak Sapi/Kerbau Belum Mencukupi Nisab"
+                                              : "Conditions for Cattle / Buffalo Livestock Not Enough Nisab",
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.white),
+                                        ));
+                                  }
+                                } else if (ternakgroup == 2) {
+                                  if (int.parse(ternakController.text) >= 40) {
+                                    if (int.parse(ternakController.text) >=
+                                            40 &&
+                                        int.parse(ternakController.text) <
+                                            121) {
+                                      bayarzakat =
+                                          "1 kambing 2 tahun atau 1 domba 1 tahun";
+                                    } else if (int.parse(
+                                                ternakController.text) >=
+                                            121 &&
+                                        int.parse(ternakController.text) <
+                                            201) {
+                                      bayarzakat =
+                                          "2 ekor kambing atau 2 domba";
+                                    } else if (int.parse(
+                                                ternakController.text) >=
+                                            201 &&
+                                        int.parse(ternakController.text) <
+                                            399) {
+                                      bayarzakat =
+                                          "3 ekor kambing atau 3 domba";
+                                    } else if (int.parse(
+                                            ternakController.text) >=
+                                        400) {
+                                      print((total / 100).floor());
+                                      bayarzakat = "" +
+                                          (total / 100).floor().toString() +
+                                          " kambing atau " +
+                                          (total / 100).floor().toString() +
+                                          " domba";
+                                    }
+                                    saveData(
+                                        "Zakat Ternak Domba/Kambing",
+                                        "Zakat on Sheep / Goats",
+                                        tgl,
+                                        bayarzakat);
+                                    Get.offAll(MainPage(
+                                      initialPage: 1,
+                                    ));
+                                  } else {
+                                    Get.snackbar("", "",
+                                        backgroundColor: "D9435E".toColor(),
+                                        icon: Icon(
+                                          Icons.info_outline,
+                                          color: Colors.white,
+                                        ),
+                                        titleText: Text(
+                                          (snapshot.data == "Indonesia")
+                                              ? "Gagal"
+                                              : "Failed",
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        messageText: Text(
+                                          (snapshot.data == "Indonesia")
+                                              ? "Syarat Ternak Domba/Kambing Belum Mencukupi Nisab"
+                                              : "Requirements for Sheep / Goats Not Enough Nisab",
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.white),
+                                        ));
+                                  }
+                                } else if (ternakgroup == 3) {
+                                  if (int.parse(ternakController.text) >= 5) {
+                                    int lebihtotal =
+                                        int.parse(ternakController.text) - 140;
+
+                                    print(lebihtotal);
+                                    print(lebihtotal % 30);
+                                    print(lebihtotal % 40);
+                                    if (total >= 5 && total < 10) {
+                                      bayarzakat = "1 ekor kambing ";
+                                    } else if (total >= 10 && total < 15) {
+                                      bayarzakat = "2 ekor kambing ";
+                                    } else if (total >= 15 && total < 20) {
+                                      bayarzakat = "3 ekor kambing ";
+                                    } else if (total >= 20 && total < 25) {
+                                      bayarzakat = "4 ekor kambing ";
+                                    } else if (total >= 25 && total < 36) {
+                                      bayarzakat =
+                                          "1 ekor unta betina 1-2 tahun ";
+                                    } else if (total >= 36 && total < 46) {
+                                      bayarzakat =
+                                          "1 ekor unta betina 2 tahun ";
+                                    } else if (total >= 46 && total < 61) {
+                                      bayarzakat =
+                                          "1 ekor unta betina 3 tahun ";
+                                    } else if (total >= 61 && total < 76) {
+                                      bayarzakat =
+                                          "1 ekor unta betina 4 tahun ";
+                                    } else if (total >= 76 && total < 91) {
+                                      bayarzakat =
+                                          "2 ekor unta betina 2 tahun ";
+                                    } else if (total >= 91 && total < 121) {
+                                      bayarzakat =
+                                          "2 ekor unta betina 3 tahun ";
+                                    } else if (total >= 121 && total < 130) {
+                                      bayarzakat =
+                                          "3 ekor unta betina 2 tahun ";
+                                    } else if (total >= 130 && total < 140) {
+                                      bayarzakat =
+                                          "1 unta betina 2 tahun dan 1 unta betina 3 tahun ";
+                                    } else {
+                                      if (lebihtotal % 50 == 0) {
+                                        print((lebihtotal / 50).floor());
+                                        bayarzakat = "" +
+                                            (lebihtotal / 50)
+                                                .floor()
+                                                .toString() +
+                                            " unta betina 3 tahun";
+                                      } else if (lebihtotal % 40 == 0) {
+                                        bayarzakat = "" +
+                                            (lebihtotal / 40)
+                                                .floor()
+                                                .toString() +
+                                            " unta betina 2 tahun";
+                                      } else if (lebihtotal % 50 < 50) {
+                                        bayarzakat = "" +
+                                            (lebihtotal / 50)
+                                                .floor()
+                                                .toString() +
+                                            " unta betina 3 tahun";
+                                      } else if (lebihtotal % 40 < 40) {
+                                        bayarzakat = "" +
+                                            (lebihtotal / 40)
+                                                .floor()
+                                                .toString() +
+                                            " unta betina 2 tahun";
+                                      }
+                                    }
+                                    saveData("Zakat Ternak Unta",
+                                        "Zakat on Camel", tgl, bayarzakat);
+                                    Get.offAll(MainPage(
+                                      initialPage: 1,
+                                    ));
+                                  } else {
+                                    Get.snackbar("", "",
+                                        backgroundColor: "D9435E".toColor(),
+                                        icon: Icon(
+                                          Icons.info_outline,
+                                          color: Colors.white,
+                                        ),
+                                        titleText: Text(
+                                          (snapshot.data == "Indonesia")
+                                              ? "Gagal"
+                                              : "Failed",
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        messageText: Text(
+                                          (snapshot.data == "Indonesia")
+                                              ? "Syarat Ternak Sapi/Kerbau Belum Mencukupi Nisab"
+                                              : "Conditions for Cattle / Buffalo Livestock Not Enough Nisab",
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.white),
+                                        ));
+                                  }
+                                }
+                              } else {
+                                Get.snackbar("", "",
+                                    backgroundColor: "D9435E".toColor(),
+                                    icon: Icon(
+                                      Icons.info_outline,
+                                      color: Colors.white,
+                                    ),
+                                    titleText: Text(
+                                      (snapshot.data == "Indonesia")
+                                          ? "Gagal"
+                                          : "Failed",
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    messageText: Text(
+                                      (snapshot.data == "Indonesia")
+                                          ? "Field Tidak Boleh Kosong"
+                                          : "Fields Cannot Be Empty",
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white),
+                                    ));
+                              }
+                            },
                             elevation: 0,
                             color: "BC9E6C".toColor(),
                             shape: RoundedRectangleBorder(
@@ -280,7 +537,7 @@ class _ZakatTernakPageState extends State<ZakatTernakPage> {
                             child: Text(
                               (snapshot.data == "Indonesia")
                                   ? "Hitung"
-                                  : "Count",
+                                  : "Calculate",
                               style: GoogleFonts.poppins(color: Colors.white),
                             ),
                           ))

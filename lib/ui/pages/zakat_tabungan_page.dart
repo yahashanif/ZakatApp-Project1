@@ -202,6 +202,12 @@ class _ZakatTabunganPageState extends State<ZakatTabunganPage> {
                     border: Border.all(color: Colors.black)),
                 child: TextField(
                   controller: zakatcontroller,
+                  inputFormatters: [
+                    WhitelistingTextInputFormatter.digitsOnly,
+                    // Fit the validating format.
+                    //fazer o formater para dinheiro
+                    CurrencyInputFormatter()
+                  ],
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                       border: InputBorder.none,
@@ -222,20 +228,40 @@ class _ZakatTabunganPageState extends State<ZakatTabunganPage> {
                           if (snapshot.data == "Indonesia") {
                             return RaisedButton(
                               onPressed: () {
-                                if (int.parse(zakatcontroller.text) >=
-                                    syarat.toInt()) {
-                                  total = NumberFormat.currency(
-                                          locale: 'id-ID',
-                                          symbol: 'IDR ',
-                                          decimalDigits: 0)
-                                      .format(int.parse(zakatcontroller.text) *
-                                          0.025);
-                                  print(zakatcontroller.text);
-                                  saveData("Zakat Tabungan", "Saving Zakat",
-                                      tgl, total.toString());
-                                  Get.offAll(MainPage(
-                                    initialPage: 1,
-                                  ));
+                                if (zakatcontroller.text != "") {
+                                  int t = int.parse(
+                                      replaceuang(zakatcontroller.text));
+                                  if (t >= syarat.toInt()) {
+                                    total = NumberFormat.currency(
+                                            locale: 'id-ID',
+                                            symbol: 'Rp. ',
+                                            decimalDigits: 0)
+                                        .format(t * 0.025);
+                                    print(zakatcontroller.text);
+                                    saveData("Zakat Tabungan", "Saving Zakat",
+                                        tgl, total.toString());
+                                    Get.offAll(MainPage(
+                                      initialPage: 1,
+                                    ));
+                                  } else {
+                                    Get.snackbar("", "",
+                                        backgroundColor: "D9435E".toColor(),
+                                        icon: Icon(
+                                          Icons.info_outline,
+                                          color: Colors.white,
+                                        ),
+                                        titleText: Text(
+                                          "Gagal",
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        messageText: Text(
+                                          "Syarat Tabungan Belum Mencukupi Nisab",
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.white),
+                                        ));
+                                  }
                                 } else {
                                   Get.snackbar("", "",
                                       backgroundColor: "D9435E".toColor(),
@@ -244,13 +270,17 @@ class _ZakatTabunganPageState extends State<ZakatTabunganPage> {
                                         color: Colors.white,
                                       ),
                                       titleText: Text(
-                                        "Gagal",
+                                        (snapshot.data == "Indonesia")
+                                            ? "Gagal"
+                                            : "Failed",
                                         style: GoogleFonts.poppins(
                                             color: Colors.white,
                                             fontWeight: FontWeight.w600),
                                       ),
                                       messageText: Text(
-                                        "Syarat Tabungan Belum Mencukupi Nisab",
+                                        (snapshot.data == "Indonesia")
+                                            ? "Field Tidak Boleh Kosong"
+                                            : "Fields Cannot Be Empty",
                                         style: GoogleFonts.poppins(
                                             color: Colors.white),
                                       ));
@@ -268,20 +298,40 @@ class _ZakatTabunganPageState extends State<ZakatTabunganPage> {
                           } else {
                             return RaisedButton(
                               onPressed: () {
-                                if (int.parse(zakatcontroller.text) >=
-                                    syarat.toInt()) {
-                                  total = NumberFormat.currency(
-                                          locale: 'id-ID',
-                                          symbol: 'IDR ',
-                                          decimalDigits: 0)
-                                      .format(int.parse(zakatcontroller.text) *
-                                          0.025);
-                                  print(zakatcontroller.text);
-                                  saveData("Zakat Tabungan", "Saving Zakat",
-                                      tgl, total.toString());
-                                  Get.offAll(MainPage(
-                                    initialPage: 1,
-                                  ));
+                                if (zakatcontroller.text != "") {
+                                  int t = int.parse(
+                                      replaceuang(zakatcontroller.text));
+                                  if (t >= syarat.toInt()) {
+                                    total = NumberFormat.currency(
+                                            locale: 'id-ID',
+                                            symbol: 'Rp. ',
+                                            decimalDigits: 0)
+                                        .format(t * 0.025);
+                                    print(zakatcontroller.text);
+                                    saveData("Zakat Tabungan", "Saving Zakat",
+                                        tgl, total.toString());
+                                    Get.offAll(MainPage(
+                                      initialPage: 1,
+                                    ));
+                                  } else {
+                                    Get.snackbar("", "",
+                                        backgroundColor: "D9435E".toColor(),
+                                        icon: Icon(
+                                          Icons.info_outline,
+                                          color: Colors.white,
+                                        ),
+                                        titleText: Text(
+                                          "Failed",
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        messageText: Text(
+                                          "Saving Requirements Not Enough Nisab",
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.white),
+                                        ));
+                                  }
                                 } else {
                                   Get.snackbar("", "",
                                       backgroundColor: "D9435E".toColor(),
@@ -290,13 +340,17 @@ class _ZakatTabunganPageState extends State<ZakatTabunganPage> {
                                         color: Colors.white,
                                       ),
                                       titleText: Text(
-                                        "Failed",
+                                        (snapshot.data == "Indonesia")
+                                            ? "Gagal"
+                                            : "Failed",
                                         style: GoogleFonts.poppins(
                                             color: Colors.white,
                                             fontWeight: FontWeight.w600),
                                       ),
                                       messageText: Text(
-                                        "Saving Requirements Not Enough Nisab",
+                                        (snapshot.data == "Indonesia")
+                                            ? "Field Tidak Boleh Kosong"
+                                            : "Fields Cannot Be Empty",
                                         style: GoogleFonts.poppins(
                                             color: Colors.white),
                                       ));
@@ -307,7 +361,7 @@ class _ZakatTabunganPageState extends State<ZakatTabunganPage> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8)),
                               child: Text(
-                                "Count",
+                                "Calculate",
                                 style: GoogleFonts.poppins(color: Colors.white),
                               ),
                             );

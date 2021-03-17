@@ -175,23 +175,48 @@ class _ZakatPerakPageState extends State<ZakatPerakPage> {
                               margin: EdgeInsets.fromLTRB(5, 36, 5, 0),
                               child: RaisedButton(
                                 onPressed: () {
-                                  if (int.parse(perakController.text) >= 595) {
-                                    gram =
-                                        int.parse(perakController.text) * 0.025;
-                                    var kk = gram * syarat;
-                                    total = "" +
-                                        gram.toString() +
-                                        " gram / " +
-                                        NumberFormat.currency(
-                                                locale: 'id-ID',
-                                                symbol: 'IDR ',
-                                                decimalDigits: 0)
-                                            .format(kk);
-                                    saveData("Zakat Perak", "Zakat Silver", tgl,
-                                        total);
-                                    Get.offAll(MainPage(
-                                      initialPage: 1,
-                                    ));
+                                  if (perakController.text != "") {
+                                    if (int.parse(perakController.text) >=
+                                        595) {
+                                      gram = int.parse(perakController.text) *
+                                          0.025;
+                                      var kk = gram * syarat;
+                                      total = "" +
+                                          gram.toString() +
+                                          " gram / " +
+                                          NumberFormat.currency(
+                                                  locale: 'id-ID',
+                                                  symbol: 'Rp. ',
+                                                  decimalDigits: 0)
+                                              .format(kk);
+                                      saveData("Zakat Perak", "Zakat Silver",
+                                          tgl, total);
+                                      Get.offAll(MainPage(
+                                        initialPage: 1,
+                                      ));
+                                    } else {
+                                      Get.snackbar("", "",
+                                          backgroundColor: "D9435E".toColor(),
+                                          icon: Icon(
+                                            Icons.info_outline,
+                                            color: Colors.white,
+                                          ),
+                                          titleText: Text(
+                                            (snapshot.data == "Indonesia")
+                                                ? "Gagal"
+                                                : "Failed",
+                                            style: GoogleFonts.poppins(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                          messageText: Text(
+                                            (snapshot.data == "Indonesia")
+                                                ? "Syarat Perak Belum Mencukupi Nisab"
+                                                : "Silver Requirements Not Enough Nisab",
+                                            style: GoogleFonts.poppins(
+                                                color: Colors.white),
+                                          ));
+                                    }
                                   } else {
                                     Get.snackbar("", "",
                                         backgroundColor: "D9435E".toColor(),
@@ -209,8 +234,8 @@ class _ZakatPerakPageState extends State<ZakatPerakPage> {
                                         ),
                                         messageText: Text(
                                           (snapshot.data == "Indonesia")
-                                              ? "Syarat Perak Belum Mencukupi Nisab"
-                                              : "Silver Requirements Not Enough Nisab",
+                                              ? "Field Tidak Boleh Kosong"
+                                              : "Fields Cannot Be Empty",
                                           style: GoogleFonts.poppins(
                                               color: Colors.white),
                                         ));
@@ -223,7 +248,7 @@ class _ZakatPerakPageState extends State<ZakatPerakPage> {
                                 child: Text(
                                   (snapshot.data == "Indonesia")
                                       ? "Hitung"
-                                      : "Count",
+                                      : "Calculate",
                                   style:
                                       GoogleFonts.poppins(color: Colors.white),
                                 ),

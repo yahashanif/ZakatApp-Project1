@@ -8,21 +8,35 @@ class ZakatProfesiPage extends StatefulWidget {
 class _ZakatProfesiPageState extends State<ZakatProfesiPage> {
   String tgl = "-- : -- : ----";
   String bahasa;
+  int syarat = 0;
   getlanguage() async {
     bahasa = await SharedPreferencesHelper.getLanguageCode();
     return bahasa;
   }
+
+  getemas() async {
+    syarat = await SharedPreferencesHelper.getEmasPrice();
+    syarat = syarat * 85;
+    return syarat;
+  }
+
+  TextEditingController masukController = TextEditingController();
+  TextEditingController keluarController = TextEditingController();
 
   @override
   void initState() {
     // TODO: implement initState
 
     super.initState();
-    getlanguage();
+    setState(() {
+      getlanguage();
+      getemas();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    tgl = convertDateTimeDisplay(DateTime.now().toString());
     return Scaffold(
       body: Stack(
         children: [
@@ -121,8 +135,8 @@ class _ZakatProfesiPageState extends State<ZakatProfesiPage> {
                         margin: EdgeInsets.fromLTRB(30, 26, 24, 0),
                         child: Text(
                           (snapshot.data == "Indonesia")
-                              ? "Jumlah Penghasilan"
-                              : "Total Income",
+                              ? "Jumlah Penghasilan 1 Tahun"
+                              : "Total Income 1 year",
                           style: GoogleFonts.poppins().copyWith(
                               color: Colors.black,
                               fontSize: 13,
@@ -137,6 +151,13 @@ class _ZakatProfesiPageState extends State<ZakatProfesiPage> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.black)),
                         child: TextField(
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            // Fit the validating format.
+                            //fazer o formater para dinheiro
+                            CurrencyInputFormatter()
+                          ],
+                          controller: masukController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                               border: InputBorder.none,
@@ -151,8 +172,8 @@ class _ZakatProfesiPageState extends State<ZakatProfesiPage> {
                         margin: EdgeInsets.fromLTRB(30, 26, 24, 0),
                         child: Text(
                           (snapshot.data == "Indonesia")
-                              ? "Jumlah Pengeluaran"
-                              : "Total Expenditures",
+                              ? "Jumlah Pengeluaran 1 Tahun"
+                              : "Total Expenditures 1 Year",
                           style: GoogleFonts.poppins().copyWith(
                               color: Colors.black,
                               fontSize: 13,
@@ -167,6 +188,13 @@ class _ZakatProfesiPageState extends State<ZakatProfesiPage> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.black)),
                         child: TextField(
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            // Fit the validating format.
+                            //fazer o formater para dinheiro
+                            CurrencyInputFormatter()
+                          ],
+                          controller: keluarController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                               border: InputBorder.none,
@@ -179,7 +207,74 @@ class _ZakatProfesiPageState extends State<ZakatProfesiPage> {
                       Container(
                           margin: EdgeInsets.fromLTRB(5, 36, 5, 0),
                           child: RaisedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (masukController.text != "" &&
+                                  keluarController.text != "") {
+                                int m = int.parse(
+                                    replaceuang(masukController.text));
+                                int k = int.parse(
+                                    replaceuang(keluarController.text));
+                                int profesi = m - k;
+                                String total = NumberFormat.currency(
+                                        locale: 'id-ID',
+                                        symbol: 'Rp. ',
+                                        decimalDigits: 0)
+                                    .format(profesi * 0.25 / 12);
+                                print(syarat.toString());
+                                if (profesi >= syarat) {
+                                  saveData("Zakat Profesi", "Profession Zakat",
+                                      tgl, "" + total + "/ Bulan");
+                                  Get.offAll(MainPage(
+                                    initialPage: 1,
+                                  ));
+                                  print(profesi);
+                                } else {
+                                  Get.snackbar("", "",
+                                      backgroundColor: "D9435E".toColor(),
+                                      icon: Icon(
+                                        Icons.info_outline,
+                                        color: Colors.white,
+                                      ),
+                                      titleText: Text(
+                                        (snapshot.data == "Indonesia")
+                                            ? "Gagal"
+                                            : "Failed",
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      messageText: Text(
+                                        (snapshot.data == "Indonesia")
+                                            ? "Syarat Profesi Belum Mencukupi Nisab"
+                                            : "Profession Requirements Not Enough Nisab",
+                                        style: GoogleFonts.poppins(
+                                            color: Colors.white),
+                                      ));
+                                }
+                              } else {
+                                Get.snackbar("", "",
+                                    backgroundColor: "D9435E".toColor(),
+                                    icon: Icon(
+                                      Icons.info_outline,
+                                      color: Colors.white,
+                                    ),
+                                    titleText: Text(
+                                      (snapshot.data == "Indonesia")
+                                          ? "Gagal"
+                                          : "Failed",
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    messageText: Text(
+                                      (snapshot.data == "Indonesia")
+                                          ? "Field Tidak Boleh Kosong"
+                                          : "Fields Cannot Be Empty",
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.white),
+                                    ));
+                              }
+                            },
                             elevation: 0,
                             color: "BC9E6C".toColor(),
                             shape: RoundedRectangleBorder(
@@ -187,7 +282,7 @@ class _ZakatProfesiPageState extends State<ZakatProfesiPage> {
                             child: Text(
                               (snapshot.data == "Indonesia")
                                   ? "Hitung"
-                                  : "Count",
+                                  : "Calculate",
                               style: GoogleFonts.poppins(color: Colors.white),
                             ),
                           ))
