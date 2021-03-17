@@ -106,6 +106,21 @@ class AboutPage extends StatelessWidget {
                                 style: GoogleFonts.poppins(
                                     fontStyle: FontStyle.italic))
                           ],
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                                (snapshot.data == "Indonesia")
+                                    ? "Referensi"
+                                    : "Reference",
+                                style: GoogleFonts.poppins(
+                                    fontStyle: FontStyle.italic)),
+                            Text("https://baznas.go.id/",
+                                style: GoogleFonts.poppins(
+                                    fontStyle: FontStyle.italic))
+                          ],
                         )
                       ],
                     ),

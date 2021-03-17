@@ -288,20 +288,13 @@ class _ZakatTernakPageState extends State<ZakatTernakPage> {
                                     print(total % 30);
                                     print(total % 40);
 
-                                    if (total % 40 == 0) {
-                                      print((total / 40).floor());
-                                      bayarzakat = "" +
-                                          (total / 40).floor().toString() +
-                                          " Sapi/Kerbau berumur 2 tahun";
-                                      print(bayarzakat);
-                                    } else if (total % 30 == 0) {
+                                    if (total % 30 == 0) {
                                       print((total / 30).floor());
                                       bayarzakat = "" +
                                           (total / 30).floor().toString() +
                                           " Sapi/Kerbau berumur 1 tahun";
                                       print(bayarzakat);
-                                    } else if (total % 40 < 40) {
-                                      print(total % 40);
+                                    } else if (total % 40 == 0) {
                                       print((total / 40).floor());
                                       bayarzakat = "" +
                                           (total / 40).floor().toString() +
@@ -313,6 +306,13 @@ class _ZakatTernakPageState extends State<ZakatTernakPage> {
                                       bayarzakat = "" +
                                           (total / 30).floor().toString() +
                                           " Sapi/Kerbau berumur 1 tahun";
+                                      print(bayarzakat);
+                                    } else if (total % 40 < 40) {
+                                      print(total % 40);
+                                      print((total / 40).floor());
+                                      bayarzakat = "" +
+                                          (total / 40).floor().toString() +
+                                          " Sapi/Kerbau berumur 2 tahun";
                                       print(bayarzakat);
                                     }
                                     saveData(
