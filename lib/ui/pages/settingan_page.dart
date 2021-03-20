@@ -280,9 +280,9 @@ class _SettinganPageState extends State<SettinganPage> {
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     child: Align(
                         alignment: Alignment.centerLeft,
-                        child: Text((bahasa != "Indonesia")
-                            ? "Silver Price"
-                            : "Harga Perak")),
+                        child: Text((bahasa == "Indonesia")
+                            ? "Harga Perak"
+                            : "Silver Price")),
                   ),
                   Container(
                     margin: EdgeInsets.fromLTRB(24, 6, 24, 0),
